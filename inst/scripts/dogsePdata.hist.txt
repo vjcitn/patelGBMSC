@@ -1,0 +1,66 @@
+library(SummarizedExperiment)
+library(annotate)
+mm = pmid2MIAME("24925914")
+mm
+abstract(mm)
+load(dir())
+patelGeneCount
+metadata(patelGeneCount) = list(MIAME=mm)
+metadata(patelGeneCount)
+save(patelGeneCount, file="patelGeneCount.rda", compress="xz")
+patelGeneCount
+table(patelGeneCount$sampcode)
+sum(.Last.value)
+sf9 = scan("SF9A.txt", w="")
+sf9
+sf9 %in% (rowData(patelGeneCount)$symbol )
+lim = patelGeneCount[match(sf9, rowData(patelGeneCount)$symbol),]
+lim
+pp = prcomp(t(assay(lim)))
+plot(pp$x[,1:2], col=factor(lim$sampcode))
+pp = prcomp(log(t(assay(lim))+1))
+plot(pp$x[,1:2], col=factor(lim$sampcode))
+table(lim$sampcode)
+96*7
+96*6
+96*5
+dir()
+library(GEOquery)
+gg[[1]]
+gg = getGEO("GSE57872")
+gg[[1]]
+GSE57872_pdata = gg[[1]]
+save(GSE57872_pdata, file="GSE57872_pdata.rda")
+pData(GSE57872_pdata)[1,]
+table(pData(GSE57872_pdata)$description)
+failstring = "Please note that this sample did not pass the quality control filtering (described in the data processing field), thus was excluded from further data processing"
+sum(GSE57872_pdata$description == failstring)
+allacc = GSE57872_pdata$accession
+allacc[1:10]
+allacc = GSE57872_pdata$geo_accession
+allacc[1:10]
+allacc = as.character(GSE57872_pdata$geo_accession)
+table(GSE57872_pdata$"cell type:ch1")
+gsePdata = data.frame(acc=allacc, cellType=as.character(GSE57872_pdata$"cell type:ch1"), failedQC=(GSE57872_pdata$description == failstring))
+table(gsePdata$failedQC)
+table(gsePdata$failedQC, gsePdata$cellType)
+popstr = "Population control for single cell sorting isolated from 1000-10000 cells"
+gsePdata = data.frame(acc=allacc, cellType=as.character(GSE57872_pdata$"cell type:ch1"), failedQC=(GSE57872_pdata$description == failstring), isPopCtrl=(GSE57872_pdata$description == popstr))
+table(gsePdata$failedQC, gsePdata$cellType, gsePdata$isPopCtrl)
+table(qcf=gsePdata$failedQC, ty=gsePdata$cellType, pop=gsePdata$isPopCtrl)
+dim(gsePdata)
+gsePdata[1:5,]
+procstr = "processed data file: GBM_data_matrix.txt"
+gsePdata = data.frame(acc=allacc, cellType=as.character(GSE57872_pdata$"cell type:ch1"), failedQC=(GSE57872_pdata$description == failstring), isPopCtrl=(GSE57872_pdata$description == popstr), inProcFile=(GSE57872_pdata$description == procstr))
+table(qcf=gsePdata$failedQC, ty=gsePdata$cellType, pop=gsePdata$isPopCtrl, gsePdata$inProcFile)
+table(qcf=gsePdata$failedQC, ty=gsePdata$cellType, pop=gsePdata$isPopCtrl, inproc=gsePdata$inProcFile)
+gsePdata = data.frame(acc=allacc, cellType=as.character(GSE57872_pdata$"cell type:ch1"), failedQC=(GSE57872_pdata$description == failstring), isPopCtrl=(GSE57872_pdata$description == popstr), inProcFile=(GSE57872_pdata$description == procstr), fullDesc=GSE57872_pdata$description)
+head(gsePdata)
+sapply(gsePdata,class)
+gsePdata = data.frame(acc=allacc, cellType=as.character(GSE57872_pdata$"cell type:ch1"), failedQC=(GSE57872_pdata$description == failstring), isPopCtrl=(GSE57872_pdata$description == popstr), inProcFile=(GSE57872_pdata$description == procstr), fullDesc=GSE57872_pdata$description, stringsAsFactors=FALSE)
+sapply(gsePdata,class)
+gsePdata = data.frame(acc=allacc, cellType=as.character(GSE57872_pdata$"cell type:ch1"), failedQC=(GSE57872_pdata$description == failstring), isPopCtrl=(GSE57872_pdata$description == popstr), inProcFile=(GSE57872_pdata$description == procstr), fullDesc=as.character(GSE57872_pdata$description), stringsAsFactors=FALSE)
+sapply(gsePdata,class)
+head(gsePdata)
+save(gsePdata, file="gsePdata.rda")
+savehistory(file="dogsePdata.hist.txt")

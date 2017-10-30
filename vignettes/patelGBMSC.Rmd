@@ -1,0 +1,76 @@
+---
+title: "patelGBMSC -- CONQUER quantification of single-cell RNA-seq in glioblastoma, thinned, with colData"
+author: "Vincent J. Carey, stvjc at channing.harvard.edu"
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+vignette: >
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteIndexEntry{patelGBMSC -- a single-cell RNA-seq dataset in glioblastoma}
+  %\VignetteEncoding{UTF-8}
+output:
+  BiocStyle::pdf_document:
+    toc: yes
+    number_sections: yes
+  BiocStyle::html_document:
+    highlight: pygments
+    number_sections: yes
+    theme: united
+    toc: yes
+---
+
+```{r setup,echo=FALSE,results="hide"}
+suppressPackageStartupMessages({
+suppressMessages({
+library(patelGBMSC)
+})
+})
+```
+
+# Introduction
+
+[Patel et al. 2014](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4123637/)
+describe a single-cell RNA-seq study of several glioblastoma
+samples.  The data were reprocessed with the 
+[CONQUER](http://imlspenticton.uzh.ch:3838/conquer/)
+pipeline (see the [QC report](http://imlspenticton.uzh.ch/robinson_lab/conquer/report-multiqc/GSE57872_multiqc_report.html)).
+
+The rds file distributed by CONQUER is large as it includes
+multiple gene-level and transcript-level quantifications.
+As of Oct 30 2017, the CONQUER distribution does not include
+sample-level information beyond the GSM identifier.  This
+package includes a smaller image of the data (the `count_lstpm`
+quantifications, that are estimated counts created using the
+salmon algorithm, rescaled to account for library size).
+The data image is over 200MB, so the `r Biocpkg("BiocFileCache")` 
+discipline is used to perform a one-time download, insertion
+and bookkeeping in cache; the `loadPatel` function takes
+care of the download and retrieval from cache as appropriate.
+
+# Quick view of the data
+
+We'll randomly sample 5000 genes to reduce runtime
+in this vignette.  There is quality control information in
+the metadata component of the SummarizedExperiment that
+may be used to filter the samples.  This is not done for
+this display.
+
+```{r getdat}
+library(patelGBMSC)
+patelGeneCount = loadPatel()
+stab = table(patelGeneCount$sampcode) 
+scodes = names(stab)
+primcodes = scodes[c(3,5,6,7,9)]
+primary = patelGeneCount[, which(patelGeneCount$sampcode %in% primcodes)]
+tcol = as.numeric(tfac <- factor(primary$sampcode))
+set.seed(1234)
+samp = assay(primary[sample(1:65218, size=5000),])
+library(Rtsne)
+RTL = Rtsne(t(log(samp+1)))
+plot(RTL$Y, col=tcol, pch=19)
+legend(-23,9,legend=levels(tfac),col=1:length(levels(tfac)),
+   pch=19)
+#myd = data.frame(ts1=RTL$Y[,1], ts2=RTL$Y[,2], 
+#        code = primary$sampcode, tcol=tcol)
+#gg = ggplot(myd, aes(x=ts1, y=ts2, group=code, colour=code)) + geom_point()
+#gg
+```
+

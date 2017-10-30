@@ -1,0 +1,15 @@
+Package: patelGBMSC
+Title: A SummarizedExperiment instance with single-cell RNA-seq on glioblastoma samples
+Description: Provide a SummarizedExperiment instance with 
+	single-cell RNA-seq on glioblastoma samples, derived from
+	CONQUER, but reduced in size and accompanied by colData.
+Version: 0.99.0
+Author: Vince Carey
+Suggests: knitr
+Depends: SummarizedExperiment, BiocFileCache
+Maintainer: VJ Carey <stvjc@channing.harvard.edu>
+License: Artistic-2.0
+LazyLoad: yes
+biocViews: transcriptomics, cancer
+VignetteBuilder: knitr
+RoxygenNote: 6.0.1.9000
