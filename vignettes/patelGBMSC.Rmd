@@ -67,7 +67,7 @@ samp = assay(primary[sample(1:nrow(primary), size=5000),])
 library(Rtsne)
 RTL = Rtsne(t(log(samp+1)))
 plot(RTL$Y, col=tcol, pch=19)
-legend(-23,9,legend=levels(tfac),col=1:length(levels(tfac)),
+legend(-15,18,legend=levels(tfac),col=1:length(levels(tfac)),
    pch=19)
 #myd = data.frame(ts1=RTL$Y[,1], ts2=RTL$Y[,2], 
 #        code = primary$sampcode, tcol=tcol)
