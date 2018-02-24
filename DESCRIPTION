@@ -3,7 +3,7 @@ Title: A SummarizedExperiment instance with single-cell RNA-seq on glioblastoma 
 Description: Provide a SummarizedExperiment instance with 
 	single-cell RNA-seq on glioblastoma samples, derived from
 	CONQUER, but reduced in size and accompanied by colData.
-Version: 0.99.0
+Version: 0.99.1
 Author: Vince Carey
 Suggests: knitr
 Depends: SummarizedExperiment, BiocFileCache
