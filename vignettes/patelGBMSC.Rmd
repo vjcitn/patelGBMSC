@@ -60,9 +60,10 @@ stab = table(patelGeneCount$sampcode)
 scodes = names(stab)
 primcodes = scodes[c(3,5,6,7,9)]
 primary = patelGeneCount[, which(patelGeneCount$sampcode %in% primcodes)]
+primary = primary[-grep("ERCC", rownames(primary)),] # drop ERCC spikeins
 tcol = as.numeric(tfac <- factor(primary$sampcode))
 set.seed(1234)
-samp = assay(primary[sample(1:65218, size=5000),])
+samp = assay(primary[sample(1:nrow(primary), size=5000),])
 library(Rtsne)
 RTL = Rtsne(t(log(samp+1)))
 plot(RTL$Y, col=tcol, pch=19)
