@@ -48,30 +48,29 @@ care of the download and retrieval from cache as appropriate.
 # Quick view of the data
 
 We'll randomly sample 5000 genes to reduce runtime
-in this vignette.  There is quality control information in
-the metadata component of the SummarizedExperiment that
-may be used to filter the samples.  This is not done for
-this display.
+in this vignette.  We filter down to the 430 patient samples
+that passed quality control.
 
 ```{r getdat}
 library(patelGBMSC)
 patelGeneCount = loadPatel()
-stab = table(patelGeneCount$sampcode) 
-scodes = names(stab)
-primcodes = scodes[c(3,5,6,7,9)]
-primary = patelGeneCount[, which(patelGeneCount$sampcode %in% primcodes)]
-primary = primary[-grep("ERCC", rownames(primary)),] # drop ERCC spikeins
-tcol = as.numeric(tfac <- factor(primary$sampcode))
+qdrop = grep("excluded", patelGeneCount$description) # QC issues
+patelGeneCount = patelGeneCount[,-qdrop]
+ispat = grep("MGH", patelGeneCount$characteristics_ch1)
+patelGeneCount = patelGeneCount[,ispat]
+patelGeneCount = patelGeneCount[-grep("ERCC", rownames(patelGeneCount)),] # drop ERCC spikeins
+patelGeneCount$sampcode = factor(gsub("patient id: ", "", patelGeneCount$characteristics_ch1))
+tcol = as.numeric(tfac <- factor(patelGeneCount$sampcode))
 set.seed(1234)
-samp = assay(primary[sample(1:nrow(primary), size=5000),])
+samp = assay(patelGeneCount[sample(1:nrow(patelGeneCount), size=5000),])
 library(Rtsne)
 RTL = Rtsne(t(log(samp+1)))
-plot(RTL$Y, col=tcol, pch=19)
-legend(-15,18,legend=levels(tfac),col=1:length(levels(tfac)),
-   pch=19)
-#myd = data.frame(ts1=RTL$Y[,1], ts2=RTL$Y[,2], 
-#        code = primary$sampcode, tcol=tcol)
-#gg = ggplot(myd, aes(x=ts1, y=ts2, group=code, colour=code)) + geom_point()
-#gg
+#plot(RTL$Y, col=tcol, pch=19)
+#legend(8,15,legend=levels(tfac),col=1:length(levels(tfac)),
+  # pch=19)
+myd = data.frame(ts1=RTL$Y[,1], ts2=RTL$Y[,2], 
+        code = patelGeneCount$sampcode, tcol=tcol)
+library(ggplot2)
+ggplot(myd, aes(x=ts1, y=ts2, group=code, colour=code)) + geom_point()
 ```
 
